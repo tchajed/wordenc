@@ -4,7 +4,7 @@ import "testing"
 
 func roundtrip(t *testing.T, data []byte) {
 	encoded := EncodeToString(data)
-	decoded, err := DecodeFromString(encoded)
+	decoded, err := DecodeString(encoded)
 	if err != nil {
 		t.Errorf("decoding %v gives error %v", data, err)
 		return

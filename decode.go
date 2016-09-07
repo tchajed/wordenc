@@ -102,8 +102,8 @@ func NewDecoder(r io.Reader) io.Reader {
 	return &wordDecoder{s, nil}
 }
 
-// DecodeFromString decodes whitespace-separated word-encoded data to bytes.
-func DecodeFromString(s string) ([]byte, error) {
+// DecodeString decodes whitespace-separated word-encoded data to bytes.
+func DecodeString(s string) ([]byte, error) {
 	data := []byte(s)
 	dec := NewDecoder(bytes.NewReader(data))
 	return ioutil.ReadAll(dec)
