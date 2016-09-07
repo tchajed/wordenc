@@ -2,7 +2,6 @@ package wordenc
 
 import (
 	"bytes"
-	"errors"
 	"io"
 )
 
@@ -117,19 +116,19 @@ func NewEncoder(w io.Writer) io.WriteCloser {
 }
 
 // EncodeToString encodes data as space-separated words.
-func EncodeToString(data []byte) (string, error) {
+func EncodeToString(data []byte) string {
 	var b bytes.Buffer
 	enc := NewEncoder(&b)
 	n, err := enc.Write(data)
 	if n < len(data) {
-		return "", errors.New("encoding did not process all bytes")
+		panic("encoding did not process all bytes")
 	}
 	if err != nil {
-		return "", err
+		panic("could not write to byte buffer")
 	}
 	err = enc.Close()
 	if err != nil {
-		return "", err
+		panic("could not write to byte buffer")
 	}
-	return b.String(), nil
+	return b.String()
 }

@@ -3,11 +3,7 @@ package wordenc
 import "testing"
 
 func roundtrip(t *testing.T, data []byte) {
-	encoded, err := EncodeToString(data)
-	if err != nil {
-		t.Errorf("encoding %v gives error %v", data, err)
-		return
-	}
+	encoded := EncodeToString(data)
 	decoded, err := DecodeFromString(encoded)
 	if err != nil {
 		t.Errorf("decoding %v gives error %v", data, err)
