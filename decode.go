@@ -2,8 +2,10 @@ package wordenc
 
 import (
 	"bufio"
+	"bytes"
 	"fmt"
 	"io"
+	"io/ioutil"
 )
 
 var wordMapping = make(map[string]int)
@@ -98,4 +100,11 @@ func (wd *wordDecoder) Read(p []byte) (n int, err error) {
 func NewDecoder(r io.Reader) io.Reader {
 	s := newWordStream(r)
 	return &wordDecoder{s, nil}
+}
+
+// DecodeFromString decodes whitespace-separated word-encoded data to bytes.
+func DecodeFromString(s string) ([]byte, error) {
+	data := []byte(s)
+	dec := NewDecoder(bytes.NewReader(data))
+	return ioutil.ReadAll(dec)
 }

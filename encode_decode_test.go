@@ -1,38 +1,14 @@
 package wordenc
 
-import (
-	"bytes"
-	"io/ioutil"
-	"testing"
-)
-
-func encode(data []byte, t *testing.T) string {
-	var b bytes.Buffer
-	enc := NewEncoder(&b)
-	n, err := enc.Write(data)
-	if n < len(data) {
-		t.Errorf("encoding did not write fully: %d/%d bytes", n, len(data))
-		return ""
-	}
-	if err != nil {
-		panic("writing to buffer failed")
-	}
-	err = enc.Close()
-	if err != nil {
-		panic("closing buffer failed")
-	}
-	return b.String()
-}
-
-func decode(s string) ([]byte, error) {
-	data := []byte(s)
-	dec := NewDecoder(bytes.NewReader(data))
-	return ioutil.ReadAll(dec)
-}
+import "testing"
 
 func roundtrip(t *testing.T, data []byte) {
-	encoded := encode(data, t)
-	decoded, err := decode(encoded)
+	encoded, err := EncodeToString(data)
+	if err != nil {
+		t.Errorf("encoding %v gives error %v", data, err)
+		return
+	}
+	decoded, err := DecodeFromString(encoded)
 	if err != nil {
 		t.Errorf("decoding %v gives error %v", data, err)
 		return

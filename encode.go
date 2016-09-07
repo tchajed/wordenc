@@ -1,6 +1,10 @@
 package wordenc
 
-import "io"
+import (
+	"bytes"
+	"errors"
+	"io"
+)
 
 // should encode all 2^12 12-bit sequences (1.5 bytes) and all 2^4 half bytes = 4112 words
 
@@ -110,4 +114,22 @@ func NewEncoder(w io.Writer) io.WriteCloser {
 		halfBytes: nil,
 		empty:     true,
 	}
+}
+
+// EncodeToString encodes data as space-separated words.
+func EncodeToString(data []byte) (string, error) {
+	var b bytes.Buffer
+	enc := NewEncoder(&b)
+	n, err := enc.Write(data)
+	if n < len(data) {
+		return "", errors.New("encoding did not process all bytes")
+	}
+	if err != nil {
+		return "", err
+	}
+	err = enc.Close()
+	if err != nil {
+		return "", err
+	}
+	return b.String(), nil
 }
