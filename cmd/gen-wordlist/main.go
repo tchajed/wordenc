@@ -43,6 +43,7 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
+	words = cleanWords(words)
 
 	fmt.Println("package wordenc")
 	fmt.Println("")
