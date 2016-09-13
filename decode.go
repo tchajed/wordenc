@@ -11,8 +11,10 @@ import (
 var wordMapping = make(map[string]int)
 
 func init() {
-	for i, w := range wordList {
-		wordMapping[w] = i
+	for i, words := range wordList {
+		for _, word := range words {
+			wordMapping[word] = i
+		}
 	}
 }
 

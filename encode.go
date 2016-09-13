@@ -39,7 +39,8 @@ func (we *wordEncoder) writeWord(index int) error {
 			return err
 		}
 	}
-	_, err := we.out.Write([]byte(wordList[index]))
+	// take the first word in a group as the canonical output
+	_, err := we.out.Write([]byte(wordList[index][0]))
 	if err != nil {
 		return err
 	}

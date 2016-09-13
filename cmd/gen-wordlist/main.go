@@ -6,9 +6,10 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"strings"
 )
 
-func parseWords(fname string) (words []string, err error) {
+func parseWords(fname string) (words [][]string, err error) {
 	f, err := os.Open(fname)
 	if err != nil {
 		return
@@ -19,9 +20,17 @@ func parseWords(fname string) (words []string, err error) {
 	}()
 	scanner := bufio.NewScanner(f)
 	for scanner.Scan() {
-		words = append(words, scanner.Text())
+		words = append(words, strings.Fields(scanner.Text()))
 	}
 	return
+}
+
+func cleanWords(words [][]string) [][]string {
+	const requiredWords = 1<<12 + 1<<4
+	if len(words) < requiredWords {
+		log.Fatalf("insufficient words: need %d, only have %d", requiredWords, len(words))
+	}
+	return words[:requiredWords]
 }
 
 func main() {
@@ -37,10 +46,17 @@ func main() {
 
 	fmt.Println("package wordenc")
 	fmt.Println("")
-	fmt.Println("var wordList = [...]string{")
+	fmt.Println("var wordList = [...][]string{")
 
-	for _, word := range words {
-		fmt.Printf("\t\"%s\",\n", word)
+	for _, wordGroup := range words {
+		fmt.Printf("\t")
+		fmt.Printf("{")
+		wordStrs := make([]string, len(wordGroup))
+		for i, word := range wordGroup {
+			wordStrs[i] = fmt.Sprintf("\"%s\"", word)
+		}
+		fmt.Print(strings.Join(wordStrs, ", "))
+		fmt.Printf("},\n")
 	}
 
 	fmt.Println("}")
