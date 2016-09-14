@@ -1,6 +1,9 @@
 package shortdict
 
-import "testing"
+import (
+	"math/rand"
+	"testing"
+)
 
 func roundtrip(t *testing.T, data []byte) {
 	encoded := EncodeToString(data)
@@ -52,4 +55,35 @@ func TestEncodeDecodeMultipleBytes(t *testing.T) {
 	roundtrip(t, []byte{32, 107, 65, 12, 204, 198})
 	roundtrip(t, []byte{123, 104, 12, 86, 100, 0})
 	roundtrip(t, []byte{123, 104, 12, 255, 86, 100, 0})
+}
+
+func BenchmarkEncoding32Bytes(b *testing.B) {
+	data := make([]byte, 32)
+	for i := range data {
+		data[i] = byte(rand.Int() & (1<<8 - 1))
+	}
+	for i := 0; i < b.N; i++ {
+		EncodeToString(data)
+	}
+}
+
+func BenchmarkDecoding32Bytes(b *testing.B) {
+	// Setup a bunch of encoded strings
+	encoded := make([]string, b.N/10+1)
+	for i := range encoded {
+		data := make([]byte, 32)
+		for i := range data {
+			data[i] = byte(rand.Int() & (1<<8 - 1))
+		}
+		encoded[i] = EncodeToString(data)
+	}
+	b.ResetTimer()
+
+	// Decode them each about 10 times
+	for i := 0; i < b.N; i++ {
+		_, err := DecodeString(encoded[i%len(encoded)], 32)
+		if err != nil {
+			b.Error(err)
+		}
+	}
 }
