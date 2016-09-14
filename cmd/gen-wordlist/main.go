@@ -25,8 +25,11 @@ func parseWords(fname string) (words [][]string, err error) {
 	return
 }
 
-func cleanWords(words [][]string) [][]string {
-	const requiredWords = 1<<12 + 1<<4
+func cleanWords(words [][]string, shortdict bool) [][]string {
+	requiredWords := 1<<12 + 1<<4
+	if shortdict {
+		requiredWords = 1 << 11
+	}
 	if len(words) < requiredWords {
 		log.Fatalf("insufficient words: need %d, only have %d", requiredWords, len(words))
 	}
@@ -34,6 +37,7 @@ func cleanWords(words [][]string) [][]string {
 }
 
 func main() {
+	shortdict := flag.Bool("shortdict", false, "generate a short (2048-word) list")
 	flag.Parse()
 	if flag.NArg() == 0 {
 		log.Fatal("no file provided")
@@ -43,9 +47,13 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	words = cleanWords(words)
+	words = cleanWords(words, *shortdict)
 
-	fmt.Println("package wordenc")
+	packageName := "wordenc"
+	if *shortdict {
+		packageName = "shortdict"
+	}
+	fmt.Printf("package %s\n", packageName)
 	fmt.Println("")
 	fmt.Println("var wordList = [...][]string{")
 
